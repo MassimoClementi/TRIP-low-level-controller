@@ -18,4 +18,9 @@ struct Command {
    double arg3;
 };
 
+enum RotationDirection{
+  FORWARD,
+  BACKWARD
+};
+
 #endif

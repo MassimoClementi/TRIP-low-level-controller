@@ -18,7 +18,7 @@ class ThreadObject
 private:
 protected:
     int _updateInterval_ms;
-    Timer periodicTimer;
+    const Timer periodicTimer;
     virtual void Update() = 0;
 public:
     ThreadObject(int updateInterval_ms);

@@ -15,6 +15,7 @@ void setup() {
   dataExchangeSerial = new DataExchangeSerial(9600, 50);
   dataExchangeSerial->SendMessage("Hello world from TRIP-LLC!");
   eventLoop.setLogIntervalMs(10000);
+  dataExchangeSerial->SendMessage("Board configuration completed");
 }
 
 void loop() {
