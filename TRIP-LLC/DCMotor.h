@@ -12,20 +12,23 @@ using namespace MicroQt;
 #include "Data.h"
 #include "DCMotorAbstract.h"
 
+#include <AFMotor.h>
+
 /*
  * Class that embeds attributes and methods to define
  * a rotative direct current motor, commanding its speed and direction
- * by using arduino motor shield
+ * by using adafruit-based arduino motor shield
   */
 class DCMotor : public DCMotorAbstract
 {
 private:   
   const double _maxOutputValue = 255;
+  int _DCMotorID;
 
-  int _pinNumberHBridgeA, _pinNumberHBridgeB, _pinNumberControl;
+  AF_DCMotor* _motor = nullptr;
 
 public:
-    DCMotor(int pinNumberHBridgeA, int pinNumberHBridgeB, int pinNumberControl);
+    DCMotor(int DCMotorID);
     ~DCMotor();
 
     void UpdateOutputValue();

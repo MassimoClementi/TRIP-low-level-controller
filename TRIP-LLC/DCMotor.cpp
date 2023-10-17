@@ -5,15 +5,10 @@
 
 #include "DCMotor.h"
 
-DCMotor::DCMotor(int pinNumberHBridgeA, int pinNumberHBridgeB, int pinNumberControl) : DCMotorAbstract() {
-  _pinNumberHBridgeA = pinNumberHBridgeA;
-  _pinNumberHBridgeB = pinNumberHBridgeB;
-  _pinNumberControl = pinNumberControl;
+DCMotor::DCMotor(int DCMotorID) : DCMotorAbstract() {
+  _DCMotorID = DCMotorID;
 
-  // Configure pins as outputs
-  pinMode(_pinNumberHBridgeA, OUTPUT);
-  pinMode(_pinNumberHBridgeB, OUTPUT);
-  pinMode(_pinNumberControl, OUTPUT);
+  _motor = new AF_DCMotor(_DCMotorID);
 
   UpdateOutputValue();
 }
@@ -26,10 +21,16 @@ void DCMotor::UpdateOutputValue(){
 
   // Set motor directionality
   bool isRotationForward = _rotationDirection == FORWARD;
-  digitalWrite(_pinNumberHBridgeA, isRotationForward);
-  digitalWrite(_pinNumberHBridgeB, not isRotationForward);
+  if(isRotationForward)
+  {
+    _motor->run(FORWARD);
+  } 
+  else
+  {
+    _motor->run(BACKWARD);
+  }
 
   // Set motor speed
   int currOutputValue = int(_currSpeedPercent * _maxOutputValue);
-  analogWrite(_pinNumberControl, currOutputValue);
+  _motor->setSpeed(currOutputValue);
 }

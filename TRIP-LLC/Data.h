@@ -18,9 +18,10 @@ struct Command {
    double arg3;
 };
 
+// Defined as Adafruit-Motor-Shield-Library
 enum RotationDirection{
-  FORWARD,
-  BACKWARD
+  FORWARD = 1,
+  BACKWARD = 2
 };
 
 #endif
