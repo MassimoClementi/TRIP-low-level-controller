@@ -7,7 +7,7 @@
 #define __DATA_H__
 
 struct EncoderMeasurement {
-   int  timeReference;
+   unsigned long  instant_ms;
    double rpm;
 };
 
