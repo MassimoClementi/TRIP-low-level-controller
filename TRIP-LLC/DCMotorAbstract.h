@@ -26,7 +26,6 @@ public:
     ~DCMotorAbstract();
     
     void SetSpeedPercent(const double speedPercent);
-    void SetRotationDirection(const RotationDirection rotationDirection);
     double GetSpeedPercent();
 
     virtual void UpdateOutputValue() = 0;

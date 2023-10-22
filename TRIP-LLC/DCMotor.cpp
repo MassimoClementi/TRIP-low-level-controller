@@ -20,7 +20,7 @@ DCMotor::~DCMotor(){
 void DCMotor::UpdateOutputValue(){
 
   // Set motor directionality
-  bool isRotationForward = _rotationDirection == FORWARD;
+  bool isRotationForward = _currSpeedPercent > 0;
   if(isRotationForward)
   {
     _motor->run(FORWARD);
@@ -31,6 +31,6 @@ void DCMotor::UpdateOutputValue(){
   }
 
   // Set motor speed
-  int currOutputValue = int(_currSpeedPercent * _maxOutputValue);
+  int currOutputValue = int(abs(_currSpeedPercent) * _maxOutputValue);
   _motor->setSpeed(currOutputValue);
 }
