@@ -19,6 +19,7 @@ RotaryEncoder* rotaryEncoder = nullptr;
 void setup() {
   dataExchangeSerial = new DataExchangeSerial(9600, 50);
   dataExchangeSerial->SendMessage("Hello world from TRIP-LLC!");
+  dataExchangeSerial->ECommandReceived.connect(&OnCommandReceived);
 
   dcMotor = new DCMotor(1);
 
@@ -57,4 +58,13 @@ void OnEncoderMeasurement(const EncoderMeasurement encoderMeasurement){
                                   " with RPMs " + String(encoderMeasurement.rpm));
 }
 
+void OnCommandReceived(const Command command){
+  dataExchangeSerial->SendMessage("Command received: " + String(command.instruction) + 
+                                  " | " + String(command.arg1) + " | " + String(command.arg2));
+  // Process specific commands logic
+  if(command.instruction == "MSET"){
+    dcMotor->SetSpeedPercent(command.arg1);
+  }
+
+}
  

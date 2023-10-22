@@ -10,6 +10,7 @@ RotaryEncoder::RotaryEncoder(int pinEncoderA, int pinEncoderB, unsigned long num
   _pinEncoderB = pinEncoderB;
 
   _encoder = new Encoder(_pinEncoderA, _pinEncoderB);
+  _encoder->write(0);
 
     // Configure fast reading thread
     readingTimer.setIntervalMs(0);

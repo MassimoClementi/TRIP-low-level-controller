@@ -21,7 +21,7 @@ class RotaryEncoderAbstract : public ThreadObject
 private:
 protected:
     unsigned long _numImpulsesPerFullRotation;
-    long _currNumImpulses;
+    long _currNumImpulses = 0;
     EncoderMeasurement _lastMeasurement;
     void Update();
 public:

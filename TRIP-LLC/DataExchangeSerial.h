@@ -20,7 +20,10 @@ class DataExchangeSerial : public DataExchangeAbstract
 {
 private:
     int _baudRate;
+    bool _isReading = false;
 
+    const char* _message = nullptr;
+    
     void Update();
 
 public:

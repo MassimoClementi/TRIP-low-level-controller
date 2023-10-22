@@ -12,10 +12,9 @@ struct EncoderMeasurement {
 };
 
 struct Command {
-   int  ID;
+   String instruction;
    double arg1;
    double arg2;
-   double arg3;
 };
 
 // Defined as Adafruit-Motor-Shield-Library

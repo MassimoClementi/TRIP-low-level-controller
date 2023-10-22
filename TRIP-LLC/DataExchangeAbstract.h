@@ -21,6 +21,7 @@ class DataExchangeAbstract : public ThreadObject
 private:
 protected:
     virtual void Update() = 0;
+    Command _lastCommand;
 public:
     DataExchangeAbstract(int updateInterval_ms);
     ~DataExchangeAbstract();
