@@ -3,8 +3,8 @@
  * Date:   2023-10-14
  */ 
 
-#ifndef __DC_MOTOR_H__
-#define __DC_MOTOR_H__
+#ifndef __DC_MOTOR_ADAFRUIT_SHIELD_H__
+#define __DC_MOTOR_ADAFRUIT_SHIELD_H__
 
 #include <MicroQt.h>
 using namespace MicroQt;
@@ -19,7 +19,7 @@ using namespace MicroQt;
  * a rotative direct current motor, commanding its speed and direction
  * by using adafruit-based arduino motor shield
   */
-class DCMotor : public DCMotorAbstract
+class DCMotorAFShield : public DCMotorAbstract
 {
 private:   
   const double _maxOutputValue = 255;
@@ -28,8 +28,8 @@ private:
   AF_DCMotor* _motor = nullptr;
 
 public:
-    DCMotor(int DCMotorID);
-    ~DCMotor();
+    DCMotorAFShield(int DCMotorID);
+    ~DCMotorAFShield();
 
     void UpdateOutputValue();
 };

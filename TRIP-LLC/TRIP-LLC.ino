@@ -8,12 +8,12 @@
 using namespace MicroQt;
 #import "Data.h"
 #import "DataExchangeSerial.h"
-#import "DCMotor.h"
+#import "DCMotorAFShield.h"
 #import "RotaryEncoder.h"
 
 // Global variables
 DataExchangeSerial* dataExchangeSerial = nullptr;
-DCMotor* dcMotor = nullptr;
+DCMotorAFShield* dcMotor = nullptr;
 RotaryEncoder* rotaryEncoder = nullptr;
 
 void setup() {
@@ -21,7 +21,7 @@ void setup() {
   dataExchangeSerial->SendMessage("Hello world from TRIP-LLC!");
   dataExchangeSerial->ECommandReceived.connect(&OnCommandReceived);
 
-  dcMotor = new DCMotor(1);
+  dcMotor = new DCMotorAFShield(1);
 
   // Set pins A0 and A1 as +5V and 0V
   pinMode(A0, OUTPUT);

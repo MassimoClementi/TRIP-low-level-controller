@@ -3,9 +3,9 @@
  * Date:   2023-10-14
  */ 
 
-#include "DCMotor.h"
+#include "DCMotorAFShield.h"
 
-DCMotor::DCMotor(int DCMotorID) : DCMotorAbstract() {
+DCMotorAFShield::DCMotorAFShield(int DCMotorID) : DCMotorAbstract() {
   _DCMotorID = DCMotorID;
 
   _motor = new AF_DCMotor(_DCMotorID);
@@ -13,11 +13,11 @@ DCMotor::DCMotor(int DCMotorID) : DCMotorAbstract() {
   UpdateOutputValue();
 }
 
-DCMotor::~DCMotor(){
+DCMotorAFShield::~DCMotorAFShield(){
   
 }
 
-void DCMotor::UpdateOutputValue(){
+void DCMotorAFShield::UpdateOutputValue(){
 
   // Set motor directionality
   bool isRotationForward = _currSpeedPercent > 0;
