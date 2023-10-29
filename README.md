@@ -1,6 +1,8 @@
 # TRIP-low-level-controller
 Tracked Robotic Intelligent Platform - Low Level Controller (LLC)
 
+All the information and functionalities reported are to be referred to stable versions, which can be retrieved from the `stable` branch.
+
 ## Introduction
 This repository contains the code of the low level controller for the TRIP robotic platform.
 The goal is to provide a flexible on-board embedded device which is able to set the speed of multiple DC motors and perform precise rotation speed measurements by means of quadrature encoders.
