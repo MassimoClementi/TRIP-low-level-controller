@@ -8,12 +8,12 @@
 using namespace MicroQt;
 #import "Data.h"
 #import "DataExchangeSerial.h"
-#import "DCMotorAFShield.h"
+#import "DCMotor_TB6612FNG.h"
 #import "RotaryEncoder.h"
 
 // Global variables
 DataExchangeSerial* dataExchangeSerial = nullptr;
-DCMotorAFShield* dcMotor = nullptr;
+DCMotor_TB6612FNG* dcMotor = nullptr;
 RotaryEncoder* rotaryEncoder = nullptr;
 
 void setup() {
@@ -21,16 +21,10 @@ void setup() {
   dataExchangeSerial->SendMessage("Hello world from TRIP-LLC!");
   dataExchangeSerial->ECommandReceived.connect(&OnCommandReceived);
 
-  dcMotor = new DCMotorAFShield(1);
-
-  // Set pins A0 and A1 as +5V and 0V
-  pinMode(A0, OUTPUT);
-  pinMode(A1, OUTPUT);
-  digitalWrite(A0, HIGH);
-  digitalWrite(A1, LOW);
+  dcMotor = new DCMotor_TB6612FNG(8, 9, 5, 12);
 
   // Both quadrature signals use interrupt pins
-  rotaryEncoder = new RotaryEncoder(2, 3, 1630, 300);
+  rotaryEncoder = new RotaryEncoder(2, 4, 1630, 300);
   rotaryEncoder->EMeasurement.connect(&OnEncoderMeasurement);
 
   // Startup the motor

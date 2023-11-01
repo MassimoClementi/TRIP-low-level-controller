@@ -18,17 +18,18 @@ DCMotor_TB6612FNG::DCMotor_TB6612FNG(int pinIN1, int pinIN2, int pinPWM, int pin
   pinMode(_pinSTBY, OUTPUT);
 
   UpdateOutputValue();
+  SetStandbySignal(true);
 }
 
 DCMotor_TB6612FNG::~DCMotor_TB6612FNG(){
   
 }
 
-void DCMotor_TB6612FNG::UpdateOutputValue(){
+void DCMotor_TB6612FNG::SetStandbySignal(bool val){
+    digitalWrite(_pinSTBY, val);
+}
 
-  // Set standby status
-  bool isMotorMovingRequired = abs(_currSpeedPercent) > 0;
-  digitalWrite(_pinSTBY, isMotorMovingRequired);
+void DCMotor_TB6612FNG::UpdateOutputValue(){
 
   // Set motor directionality
   bool isRotationForward = _currSpeedPercent > 0;
@@ -37,5 +38,5 @@ void DCMotor_TB6612FNG::UpdateOutputValue(){
 
   // Set motor speed
   int currOutputValue = int(abs(_currSpeedPercent) * _maxOutputValue);
-  digitalWrite(_pinPWM, currOutputValue);
+  analogWrite(_pinPWM, currOutputValue);
 }

@@ -27,6 +27,8 @@ public:
     DCMotor_TB6612FNG(int pinIN1, int pinIN2, int pinPWM, int pinSTBY);
     ~DCMotor_TB6612FNG();
 
+    void SetStandbySignal(bool val);
+
     void UpdateOutputValue();
 };
 
