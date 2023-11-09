@@ -28,7 +28,8 @@ The current project uses the JGY370 Self-locking geared motor, with embedded hal
 
 ![Motor wiring](./media/motor-wiring.png "Motor wiring from manifacturer")
 
-The DC motor speed is then managed by using Adashield-based motor shield.
+The DC motor speed is then managed by using a Dual-motor Toshiba TB6612FNG-based breakout board.
+Optionally, there is also support to use an Adashield-based motor shield driver.
 
 The encoder impulses count are then managed by the Encoder library. An empirical test has been performed to understand with the current hardware the impact of the use of interrupt and non-interrupt pins to count impulses. The result is that at least one interrupt pin has to be used to have an acceptably low incidence of missed counts and to avoid aliasing.
 
