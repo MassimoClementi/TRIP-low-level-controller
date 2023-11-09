@@ -10,11 +10,13 @@ using namespace MicroQt;
 #import "DataExchangeSerial.h"
 #import "DCMotor_TB6612FNG.h"
 #import "RotaryEncoder.h"
+#import "ControllerStep.h"
 
 // Global variables
 DataExchangeSerial* dataExchangeSerial = nullptr;
 DCMotor_TB6612FNG* dcMotor = nullptr;
 RotaryEncoder* rotaryEncoder = nullptr;
+ControllerStep* controllerStep = nullptr;
 
 void setup() {
   dataExchangeSerial = new DataExchangeSerial(9600, 50);
@@ -26,6 +28,9 @@ void setup() {
   // Both quadrature signals use interrupt pins
   rotaryEncoder = new RotaryEncoder(2, 4, 1630, 300);
   rotaryEncoder->EMeasurement.connect(&OnEncoderMeasurement);
+
+  controllerStep = new ControllerStep();
+  controllerStep->EUpdateControlInput.connect(&OnControllerUpdateControlInput);
 
   // Startup the motor
   for(int i = 0; i < 100; i++){
@@ -50,6 +55,12 @@ void loop() {
 void OnEncoderMeasurement(const EncoderMeasurement encoderMeasurement){
   dataExchangeSerial->SendMessage("Encoder measurement at instant " + String(encoderMeasurement.instant_ms) + 
                                   " with RPMs " + String(encoderMeasurement.rpm));
+  controllerStep->SetMeasuredOutput(encoderMeasurement.rpm);
+}
+
+void OnControllerUpdateControlInput(const double controlInput){
+  dataExchangeSerial->SendMessage("Controller set control input to " + String(controlInput));
+  dcMotor->SetSpeedPercent(controlInput);
 }
 
 void OnCommandReceived(const Command command){
@@ -58,6 +69,9 @@ void OnCommandReceived(const Command command){
   // Process specific commands logic
   if(command.instruction == "MSET"){
     dcMotor->SetSpeedPercent(command.arg1);
+  }
+  else if(command.instruction == "CSET"){
+    controllerStep->SetTarget(command.arg1);
   }
 
 }
