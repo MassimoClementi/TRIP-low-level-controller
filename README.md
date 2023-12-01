@@ -73,3 +73,4 @@ The following Arduino C++ libraries are required to compile successfully and run
 | MicroQT | https://github.com/juliusbaechle/MicroQt |
 | Adafruit motor shield library | https://github.com/adafruit/Adafruit-Motor-Shield-library/tree/master |
 | Encoder | https://github.com/PaulStoffregen/Encoder |
+| PID | https://github.com/br3ttb/Arduino-PID-Library |
