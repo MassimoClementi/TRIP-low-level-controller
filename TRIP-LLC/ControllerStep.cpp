@@ -6,8 +6,8 @@
 #include "ControllerStep.h"
 
 
-ControllerStep::ControllerStep(double controlInputLimitMin, double controlInputLimitMax) : ControllerAbstract(controlInputLimitMin, controlInputLimitMax){
-  
+ControllerStep::ControllerStep(double controlInputLimitMin, double controlInputLimitMax, double kProportional) : ControllerAbstract(controlInputLimitMin, controlInputLimitMax){
+  _kProportional = kProportional;
 }
 
 ControllerStep::~ControllerStep(){
@@ -15,5 +15,5 @@ ControllerStep::~ControllerStep(){
 }
 
 void ControllerStep::ComputeControlInput(double controlError){
-  _controlInput = _controlInput + controlError * 0.01;
+  _controlInput = _controlInput + controlError * _kProportional;
 }
