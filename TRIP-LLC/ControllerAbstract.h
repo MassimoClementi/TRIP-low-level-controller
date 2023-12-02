@@ -18,6 +18,9 @@ using namespace MicroQt;
 class ControllerAbstract
 {
 protected:
+    // Enable or disable the controller
+    bool _isEnabled;
+
     // Setpoint, desired physical output target
     double _referenceInput;
 
@@ -34,6 +37,8 @@ public:
     ~ControllerAbstract();
     
     void SetTarget(const double target);
+
+    void SetEnabled(const bool isEnabled);
 
     void SetMeasuredOutput(const double measuredOutput);
 

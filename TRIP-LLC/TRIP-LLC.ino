@@ -12,35 +12,46 @@ using namespace MicroQt;
 #import "RotaryEncoder.h"
 #import "ControllerStep.h"
 
+// Hardware configuration
+#define NUM_MOTORS 2
+#define PIN_ENC1_Q1 2
+#define PIN_ENC1_Q2 4
+#define PIN_ENC2_Q1 3
+#define PIN_ENC2_Q2 7
+#define PIN_MOTOR1_IN1 8
+#define PIN_MOTOR1_IN2 9
+#define PIN_MOTOR1_PWM 5
+#define PIN_MOTOR2_IN1 10
+#define PIN_MOTOR2_IN2 11
+#define PIN_MOTOR2_PWM 6
+#define PIN_MOTORS_STBY 12
+
 // Global variables
-DataExchangeSerial* dataExchangeSerial = nullptr;
-DCMotor_TB6612FNG* dcMotor = nullptr;
-RotaryEncoder* rotaryEncoder = nullptr;
-ControllerStep* controllerStep = nullptr;
+DataExchangeAbstract* dataExchange = nullptr;
+DCMotorAbstract* dcMotors[NUM_MOTORS];
+RotaryEncoderAbstract* rotaryEncoders[NUM_MOTORS];
+ControllerAbstract* controllers[NUM_MOTORS];
 
 void setup() {
-  dataExchangeSerial = new DataExchangeSerial(9600, 50);
-  dataExchangeSerial->SendMessage("Hello world from TRIP-LLC!");
-  dataExchangeSerial->ECommandReceived.connect(&OnCommandReceived);
+  dataExchange = new DataExchangeSerial(9600, 50);
+  dataExchange->SendMessage("Hello world from TRIP-LLC!");
+  dataExchange->ECommandReceived.connect(&OnCommandReceived);
 
-  dcMotor = new DCMotor_TB6612FNG(8, 9, 5, 12);
+  dcMotors[0] = new DCMotor_TB6612FNG(PIN_MOTOR1_IN1, PIN_MOTOR1_IN2, PIN_MOTOR1_PWM, PIN_MOTORS_STBY);
+  dcMotors[1] = new DCMotor_TB6612FNG(PIN_MOTOR2_IN1, PIN_MOTOR2_IN2, PIN_MOTOR2_PWM, PIN_MOTORS_STBY);
 
-  // Both quadrature signals use interrupt pins
-  rotaryEncoder = new RotaryEncoder(2, 4, 1630, 300);
-  rotaryEncoder->EMeasurement.connect(&OnEncoderMeasurement);
+  rotaryEncoders[0] = new RotaryEncoder(PIN_ENC1_Q1, PIN_ENC1_Q2, 1630, 300);
+  rotaryEncoders[0]->EMeasurement.connect(&OnEncoder1Measurement);
+  rotaryEncoders[1] = new RotaryEncoder(PIN_ENC2_Q1, PIN_ENC2_Q2, 1630, 300);
+  rotaryEncoders[1]->EMeasurement.connect(&OnEncoder2Measurement);
 
-  controllerStep = new ControllerStep();
-  controllerStep->EUpdateControlInput.connect(&OnControllerUpdateControlInput);
-
-  // Startup the motor
-  for(int i = 0; i < 100; i++){
-    dcMotor->SetSpeedPercent(i / 100.0);
-    // dataExchangeSerial->SendMessage(String(dcMotor->GetSpeedPercent()));
-    delay(10);
-  }
+  controllers[0] = new ControllerStep();
+  controllers[0]->EUpdateControlInput.connect(&OnController1UpdateControlInput);
+  controllers[1] = new ControllerStep();
+  controllers[1]->EUpdateControlInput.connect(&OnController2UpdateControlInput);
   
   eventLoop.setLogIntervalMs(10000);
-  dataExchangeSerial->SendMessage("Board configuration completed");
+  dataExchange->SendMessage("TRIP low level controller - configuration completed");
 }
 
 void loop() {
@@ -48,31 +59,58 @@ void loop() {
   eventLoop.exec();
 }
 
+
 /*
- * Events callback functions
+ * Events callback functions and utilities
  */
 
-void OnEncoderMeasurement(const EncoderMeasurement encoderMeasurement){
-  dataExchangeSerial->SendMessage("Encoder measurement at instant " + String(encoderMeasurement.instant_ms) + 
-                                  " with RPMs " + String(encoderMeasurement.rpm));
-  controllerStep->SetMeasuredOutput(encoderMeasurement.rpm);
+void OnEncoder1Measurement(const EncoderMeasurement encoderMeasurement){
+    OnEncoderMeasurement(encoderMeasurement, 0);
 }
 
-void OnControllerUpdateControlInput(const double controlInput){
-  dataExchangeSerial->SendMessage("Controller set control input to " + String(controlInput));
-  dcMotor->SetSpeedPercent(controlInput);
+void OnEncoder2Measurement(const EncoderMeasurement encoderMeasurement){
+    OnEncoderMeasurement(encoderMeasurement, 1);
+}
+
+void OnEncoderMeasurement(const EncoderMeasurement encoderMeasurement, int encoderNumber){
+    dataExchange->SendMessage("ENC" + String(encoderNumber) + 
+                              ", RPM: " + String(encoderMeasurement.rpm) + 
+                               ", T: " + String(encoderMeasurement.instant_ms));
+    controllers[encoderNumber]->SetMeasuredOutput(encoderMeasurement.rpm);
+}
+
+void OnController1UpdateControlInput(const double controlInput){
+  OnControllerUpdateControlInput(controlInput, 0);
+}
+
+void OnController2UpdateControlInput(const double controlInput){
+  OnControllerUpdateControlInput(controlInput, 1);
+}
+
+void OnControllerUpdateControlInput(const double controlInput, int controllerNumber){
+  dataExchange->SendMessage("CON" + String(controllerNumber) + ", INPUT SET " + String(controlInput));
+  dcMotors[controllerNumber]->SetSpeedPercent(controlInput);
 }
 
 void OnCommandReceived(const Command command){
-  dataExchangeSerial->SendMessage("Command received: " + String(command.instruction) + 
+  dataExchange->SendMessage("Command received: " + String(command.instruction) + 
                                   " | " + String(command.arg1) + " | " + String(command.arg2));
+
+  // Get index of motor of interest
+  // Assert that index is valid
+  int selectedItem = int(command.arg1);
+  if(selectedItem < 0 or selectedItem >= NUM_MOTORS){
+    return;
+  }
+  
   // Process specific commands logic
   if(command.instruction == "MSET"){
-    dcMotor->SetSpeedPercent(command.arg1);
+    controllers[selectedItem]->SetEnabled(false);
+    dcMotors[selectedItem]->SetSpeedPercent(command.arg2);
   }
   else if(command.instruction == "CSET"){
-    controllerStep->SetTarget(command.arg1);
+    controllers[selectedItem]->SetTarget(command.arg2);
+    controllers[selectedItem]->SetEnabled(true);
   }
-
 }
  
