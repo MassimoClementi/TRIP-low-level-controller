@@ -21,7 +21,7 @@ protected:
     void ComputeControlInput(double controlError);
 
 public:
-    ControllerStep();
+    ControllerStep(double controlInputLimitMin, double controlInputLimitMax);
     ~ControllerStep();
 };
 

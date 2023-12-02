@@ -1,7 +1,7 @@
 # TRIP-low-level-controller
 Tracked Robotic Intelligent Platform - Low Level Controller (LLC)
 
-All the information and functionalities reported are to be referred to stable versions, which can be retrieved from the `stable` branch.
+The `stable` branch always represents a snapshot of the most recent tested working version. Relevant commits are also tagged and set as release. The `main` branch instead contains the work-in-progress developments. 
 
 ## Introduction
 This repository contains the code of the low level controller for the TRIP robotic platform.
@@ -25,11 +25,11 @@ Abstract classes are then used to generate specialized derived classes, which de
 
 ## Motor and encoder
 
-The current project uses the JGY370 self-locking geared motor, with embedded hall-effect quadrature encoder. The following image visualizes the board wiring.
+The current project uses the JGY370 self-locking geared motor model, with embedded hall-effect quadrature encoder. The following image visualizes the board wiring.
 
 ![Motor wiring](./media/motor-wiring.png "Motor wiring from manifacturer")
 
-The DC motor speed is then managed by using a Dual-motor Toshiba TB6612FNG-based breakout board.
+The DC motors speed can then managed by using a Dual-motor Toshiba TB6612FNG-based breakout board.
 Optionally, there is also support to use an Adashield-based motor shield driver.
 
 ![TB6612FNG-based motor driver breakout board](./media/motor-driver-TB6612FNG.JPG "Breakout board for the TB6612FNG-based motor driver")
@@ -50,19 +50,19 @@ It is worth noting that in the scope of this project, the _reference input_ is t
 
 ## Serial signal exchange
 
-Both _relative_ and _absolute_ speed of the motor can be set by sending commands to the Arduino board using serial COM.
+Both _relative_ and _absolute_ speed of each instantiated motor can be set by sending commands to the Arduino board using serial COM.
 
-The **relative** motor speed can be set by sending the following message:
+The **relative** speed of each motor can be set by sending the following message:
 ```
-MSET, <value>
+MSET, <motorNumber>, <value>
 ```
-where value $\in [-1.0,\,1.0]$, with dot decimal separator. The value magnitude represents the relative motor speed, with an absolute value of 1.0 as the maximum rotation speed and the value 0.0 as no rotation. The value sign embeds the direction of the revolution.
+where motorNumber is the integer motor index, starting from zero, while the value $\in [-1.0,1.0]$ is the signed percentage speed, with dot decimal separator. The value magnitude represents the relative motor speed, with an absolute value of 1.0 as the maximum rotation speed and the value 0.0 as no rotation. The value sign embeds the direction of the revolution.
 
-The **absolute** motor speed can be set by sending the following message:
+The **absolute** speed of each motor can be set by sending the following message:
 ```
-CSET, <value>
+CSET, <motorNumber>, <value>
 ```
-where value $\in [-\infty,\,\infty]$, with dot decimal separator. The value magnitude represents the absolute motor speed, in RPM units. The value sign embeds the direction of the revolution.
+where motorNumber is the integer motor index, starting from zero, while the value $\in [-\infty,\infty]$ is the signed absolute speed, with dot decimal separator. The value magnitude represents the absolute motor speed, in RPM units. The value sign embeds the direction of the revolution.
 
 ## Libraries
 
@@ -73,3 +73,4 @@ The following Arduino C++ libraries are required to compile successfully and run
 | MicroQT | https://github.com/juliusbaechle/MicroQt |
 | Adafruit motor shield library | https://github.com/adafruit/Adafruit-Motor-Shield-library/tree/master |
 | Encoder | https://github.com/PaulStoffregen/Encoder |
+| PID | https://github.com/br3ttb/Arduino-PID-Library |
