@@ -11,6 +11,7 @@ using namespace MicroQt;
 #import "DCMotor_TB6612FNG.h"
 #import "RotaryEncoder.h"
 #import "ControllerStep.h"
+#import "ControllerPID.h"
 
 // Hardware configuration
 #define NUM_MOTORS 2
@@ -45,9 +46,10 @@ void setup() {
   rotaryEncoders[1] = new RotaryEncoder(PIN_ENC2_Q1, PIN_ENC2_Q2, 1630, 300);
   rotaryEncoders[1]->EMeasurement.connect(&OnEncoder2Measurement);
 
-  controllers[0] = new ControllerStep();
+  controllers[0] = new ControllerStep(-1.0, 1.0);
+  //controllers[0] = new ControllerPID(-1.0, 1.0, 0.02, 0.07, 0.001);
   controllers[0]->EUpdateControlInput.connect(&OnController1UpdateControlInput);
-  controllers[1] = new ControllerStep();
+  controllers[1] = new ControllerStep(-1.0, 1.0);
   controllers[1]->EUpdateControlInput.connect(&OnController2UpdateControlInput);
   
   eventLoop.setLogIntervalMs(10000);

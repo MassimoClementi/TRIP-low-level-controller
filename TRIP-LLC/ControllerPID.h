@@ -21,12 +21,17 @@ class ControllerPID : public ControllerAbstract
 {
 protected:
     double _kp, _ki, _kd;
+    double _pidOutput;
+
+    const double _pidLimitMin = -1.0;
+    const double _pidLimitMax = 1.0;
+    
     PID* _myPID = nullptr;
 
     void ComputeControlInput(double controlError);
 
 public:
-    ControllerPID(double kp, double ki, double kd);
+    ControllerPID(double controlInputLimitMin, double controlInputLimitMax, double kp, double ki, double kd);
     ~ControllerPID();
 };
 

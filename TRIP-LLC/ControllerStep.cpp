@@ -6,7 +6,7 @@
 #include "ControllerStep.h"
 
 
-ControllerStep::ControllerStep() : ControllerAbstract(){
+ControllerStep::ControllerStep(double controlInputLimitMin, double controlInputLimitMax) : ControllerAbstract(controlInputLimitMin, controlInputLimitMax){
   
 }
 
