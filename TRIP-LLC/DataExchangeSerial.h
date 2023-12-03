@@ -21,9 +21,9 @@ class DataExchangeSerial : public DataExchangeAbstract
 private:
     int _baudRate;
     bool _isReading = false;
-
     const char* _message = nullptr;
-    
+
+    double GetIntToExtSpeedConversionFactor();
     void Update();
 
 public:
@@ -31,6 +31,8 @@ public:
     ~DataExchangeSerial();
 
     void SendMessage(const String message);
+    void SendEncoderMeasurement(const EncoderMeasurement encoderMeasurement, const int encoderNumber);
+
 };
 
 #endif

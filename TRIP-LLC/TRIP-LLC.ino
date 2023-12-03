@@ -46,14 +46,14 @@ void setup() {
   rotaryEncoders[1] = new RotaryEncoder(PIN_ENC2_Q1, PIN_ENC2_Q2, 1630, 300);
   rotaryEncoders[1]->EMeasurement.connect(&OnEncoder2Measurement);
 
-  controllers[0] = new ControllerStep(-1.0, 1.0, 0.01);
+  controllers[0] = new ControllerStep(-1.0, 1.0, 0.02);
   //controllers[0] = new ControllerPID(-1.0, 1.0, 0.02, 0.07, 0.001);
   controllers[0]->EUpdateControlInput.connect(&OnController1UpdateControlInput);
   controllers[1] = new ControllerStep(-1.0, 1.0, 0.01);
   controllers[1]->EUpdateControlInput.connect(&OnController2UpdateControlInput);
   
   eventLoop.setLogIntervalMs(10000);
-  dataExchange->SendMessage("TRIP low level controller - configuration completed");
+  dataExchange->SendMessage("TRIP-LLC configuration completed");
 }
 
 void loop() {
@@ -75,9 +75,7 @@ void OnEncoder2Measurement(const EncoderMeasurement encoderMeasurement){
 }
 
 void OnEncoderMeasurement(const EncoderMeasurement encoderMeasurement, int encoderNumber){
-    dataExchange->SendMessage("ENC" + String(encoderNumber) + 
-                              ", RPM: " + String(encoderMeasurement.rpm) + 
-                               ", T: " + String(encoderMeasurement.instant_ms));
+    dataExchange->SendEncoderMeasurement(encoderMeasurement, encoderNumber);
     controllers[encoderNumber]->SetMeasuredOutput(encoderMeasurement.rpm);
 }
 
@@ -95,9 +93,6 @@ void OnControllerUpdateControlInput(const double controlInput, int controllerNum
 }
 
 void OnCommandReceived(const Command command){
-  dataExchange->SendMessage("Command received: " + String(command.instruction) + 
-                                  " | " + String(command.arg1) + " | " + String(command.arg2));
-
   // Get index of motor of interest
   // Assert that index is valid
   int selectedItem = int(command.arg1);

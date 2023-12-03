@@ -18,6 +18,16 @@ void DataExchangeSerial::SendMessage(const String message){
   Serial.println(message);
 }
 
+void DataExchangeSerial::SendEncoderMeasurement(const EncoderMeasurement encoderMeasurement, const int encoderNumber){
+  SendMessage("ENC" + String(encoderNumber) + 
+              ", RPM: " + String(ConvertSpeed_FromIntToExt(encoderMeasurement.rpm)) + 
+              ", T: " + String(encoderMeasurement.instant_ms));
+}
+
+double DataExchangeSerial::GetIntToExtSpeedConversionFactor(){
+  return 1.0;
+}
+
 void DataExchangeSerial::Update(){
   if (_isReading == false && Serial.available() > 0){
     _isReading = true;
@@ -37,7 +47,11 @@ void DataExchangeSerial::Update(){
     strtokIndx = strtok(NULL, ",");
     _lastCommand.arg1 = double(atof(strtokIndx));     // convert arg1 to double
     strtokIndx = strtok(NULL, ",");
-    _lastCommand.arg2 = double(atof(strtokIndx));     // convert arg2 to double
+    _lastCommand.arg2 = ConvertSpeed_FromExtToInt(double(atof(strtokIndx)));     // convert arg2 to double
+
+    // Log formatted received command
+    SendMessage("Command received: " + String(_lastCommand.instruction) + 
+                                  " | " + String(_lastCommand.arg1) + " | " + String(_lastCommand.arg2));
 
     // Share command
     ECommandReceived(_lastCommand);

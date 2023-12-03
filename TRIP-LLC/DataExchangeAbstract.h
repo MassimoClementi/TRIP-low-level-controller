@@ -20,13 +20,18 @@ class DataExchangeAbstract : public ThreadObject
 {
 private:
 protected:
-    virtual void Update() = 0;
     Command _lastCommand;
+    double ConvertSpeed_FromIntToExt(const double val);
+    double ConvertSpeed_FromExtToInt(const double val);
+    virtual double GetIntToExtSpeedConversionFactor() = 0;
+    virtual void Update() = 0;
+    
 public:
     DataExchangeAbstract(int updateInterval_ms);
     ~DataExchangeAbstract();
     virtual void SendMessage(const String message) = 0;
-
+    virtual void SendEncoderMeasurement(const EncoderMeasurement encoderMeasurement, const int encoderNumber) = 0;
+    
     Signal<const Command> ECommandReceived;
 };
 

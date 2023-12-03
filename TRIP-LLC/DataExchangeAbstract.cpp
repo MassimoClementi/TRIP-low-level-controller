@@ -12,3 +12,11 @@ DataExchangeAbstract::DataExchangeAbstract(int updateInterval_ms) : ThreadObject
 DataExchangeAbstract::~DataExchangeAbstract()
 {
 }
+
+double DataExchangeAbstract::ConvertSpeed_FromIntToExt(const double val){
+  return val * GetIntToExtSpeedConversionFactor();
+}
+
+double DataExchangeAbstract::ConvertSpeed_FromExtToInt(const double val){
+  return val / GetIntToExtSpeedConversionFactor();
+}
