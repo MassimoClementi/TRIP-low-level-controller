@@ -75,7 +75,7 @@ void OnEncoder2Measurement(const EncoderMeasurement encoderMeasurement){
 }
 
 void OnEncoderMeasurement(const EncoderMeasurement encoderMeasurement, int encoderNumber){
-    dataExchange->SendEncoderMeasurement(encoderMeasurement, encoderNumber);
+    // dataExchange->SendEncoderMeasurement(encoderMeasurement, encoderNumber);
     controllers[encoderNumber]->SetMeasuredOutput(encoderMeasurement.rpm);
 }
 
@@ -93,21 +93,36 @@ void OnControllerUpdateControlInput(const double controlInput, int controllerNum
 }
 
 void OnCommandReceived(const Command command){
-  // Get index of motor of interest
-  // Assert that index is valid
+  // The following commands are motor-agnostic
+  // Therefore no value checks need to be performed
+  if(command.instruction == "ENC"){
+    // Share last measurement of all encoders
+    for(int enc_idx = 0; enc_idx < NUM_MOTORS; enc_idx++){
+      dataExchange->SendEncoderMeasurement(
+        rotaryEncoders[enc_idx]->GetLastMeasurement(),
+        enc_idx);
+    }
+    return;
+  }
+
+  // The following commands are motor-specific
+  // It is then necessary to assert beforehand that the index
+  // of the motor of interest is valid
   int selectedItem = int(command.arg1);
   if(selectedItem < 0 or selectedItem >= NUM_MOTORS){
     return;
   }
-  
-  // Process specific commands logic
   if(command.instruction == "MSET"){
+    // Set directly motor percent speed
     controllers[selectedItem]->SetEnabled(false);
     dcMotors[selectedItem]->SetSpeedPercent(command.arg2);
+    return;
   }
-  else if(command.instruction == "CSET"){
+  if(command.instruction == "CSET"){
+    // Define new absolute speed setpoint for motor controller
     controllers[selectedItem]->SetTarget(command.arg2);
     controllers[selectedItem]->SetEnabled(true);
+    return;
   }
 }
  

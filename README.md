@@ -64,6 +64,12 @@ CSET, <motorNumber>, <value>
 ```
 where motorNumber is the integer motor index, starting from zero, while the value $\in [-\infty,\infty]$ is the signed absolute speed, with dot decimal separator. The value magnitude represents the absolute motor speed, in RPM units. The value sign embeds the direction of the revolution.
 
+Finally, the last available RPM measurement of all managed rotary encoders can be retrieved with a single command, sending the following message:
+```
+ENC
+```
+The Arduino will then publish on the serial communication, for each encoder, the istantaneous RPM value and the related instant of measurement, expressed in milliseconds since board start-up. This enables performing data elaborations which require precise time deltas.
+
 ## Libraries
 
 The following Arduino C++ libraries are required to compile successfully and run the project. All libraries listed are fully available for download and install directly from the Arduino IDE. 
