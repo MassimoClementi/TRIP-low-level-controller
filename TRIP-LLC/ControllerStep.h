@@ -18,10 +18,11 @@ using namespace MicroQt;
 class ControllerStep : public ControllerAbstract
 {
 protected:
+    double _kProportional;
     void ComputeControlInput(double controlError);
 
 public:
-    ControllerStep(double controlInputLimitMin, double controlInputLimitMax);
+    ControllerStep(double controlInputLimitMin, double controlInputLimitMax, double kProportional);
     ~ControllerStep();
 };
 

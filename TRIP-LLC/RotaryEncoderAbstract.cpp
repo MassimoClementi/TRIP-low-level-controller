@@ -15,6 +15,10 @@ RotaryEncoderAbstract::~RotaryEncoderAbstract(){
   
 }
 
+EncoderMeasurement RotaryEncoderAbstract::GetLastMeasurement(){
+  return _lastMeasurement;
+}
+
 void RotaryEncoderAbstract::Update(){
 
   // Compute speed based on current impulses count
