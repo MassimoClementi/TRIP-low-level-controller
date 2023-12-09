@@ -23,4 +23,11 @@ enum RotationDirection{
   BACKWARD = 2
 };
 
+// 10 + 8 + 1 bytes ~ 20 bytes
+struct ParameterVariable{
+  char paramName[10];
+  double paramValue = 0.0;
+  bool isInitialized = false;
+};
+
 #endif

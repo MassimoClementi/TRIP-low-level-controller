@@ -20,6 +20,7 @@ Hereafter the main abstract classes are reported:
 | RotaryEncoderAbstract | Object which embeds the logic to retrieve impulses count, compute istantaneous rotation speed measurements and broadcast measurement results |
 | ControllerAbstract | Object which defines methods to create a closed-loop controller for the motor actuation |
 | DataExchangeAbstract | Object which defines methods to create an interface between the board and external systems |
+| ParametersManagerAbstract | Object which defines methods to create a parameters manager, which allows to get, edit and save a list of numerical values paired to an unique string identifier |
 
 Abstract classes are then used to generate specialized derived classes, which define explicitly the interfaces between the software and the physical devices.
 
