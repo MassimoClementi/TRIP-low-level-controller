@@ -52,7 +52,7 @@ void setup() {
   controllers[1] = new ControllerStep(-1.0, 1.0, 0.01);
   controllers[1]->EUpdateControlInput.connect(&OnController2UpdateControlInput);
   
-  eventLoop.setLogIntervalMs(10000);
+  eventLoop.setLogIntervalMs(30000);
   dataExchange->SendMessage("TRIP-LLC configuration completed");
 }
 
@@ -88,7 +88,7 @@ void OnController2UpdateControlInput(const double controlInput){
 }
 
 void OnControllerUpdateControlInput(const double controlInput, int controllerNumber){
-  dataExchange->SendMessage("CON" + String(controllerNumber) + ", INPUT SET " + String(controlInput));
+  // dataExchange->SendMessage("CON" + String(controllerNumber) + ", INPUT SET " + String(controlInput));
   dcMotors[controllerNumber]->SetSpeedPercent(controlInput);
 }
 
