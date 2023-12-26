@@ -18,23 +18,28 @@ using namespace MicroQt;
 class ParametersManagerAbstract
 {
 protected:
-  static const int _numVariables = 5;
+  static const int _numVariables = 30;
   ParameterVariable _parameters[_numVariables];
 
   void InitializeVariables();
-  
-  bool SaveParametersToDisk();
-  bool LoadParametersFromDisk();
+  bool SetVariableIfNotExists(char* paramName, double paramValue);
+
+  virtual bool StoreParameters() = 0;
+  virtual bool StoreParameter(int paramIndex) = 0;
+  virtual bool RestoreParameters() = 0;
   
 public:
     ParametersManagerAbstract();
     ~ParametersManagerAbstract();
 
-    double GetVariable(char* paramName);
+    ParameterVariable* GetVariable(char* paramName);
     bool SetVariable(char* paramName, double paramValue);
     bool RemoveVariable(char* paramName);
-    String GetParameterDescription(int paramIndex);
+
     int GetNumVariables();
+    String GetParameterDescription(int paramIndex);
+    
+    bool ResetAll();
 };
 
 #endif
