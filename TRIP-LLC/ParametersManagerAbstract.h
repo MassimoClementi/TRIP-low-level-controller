@@ -18,7 +18,7 @@ using namespace MicroQt;
 class ParametersManagerAbstract
 {
 protected:
-  static const int _numVariables = 30;
+  static const int _numVariables = 10;
   ParameterVariable _parameters[_numVariables];
 
   void InitializeVariables();
@@ -33,7 +33,7 @@ public:
     ~ParametersManagerAbstract();
 
     ParameterVariable* GetVariable(char* paramName);
-    bool SetVariable(char* paramName, double paramValue);
+    bool SetVariable(char* paramName, double paramValue, bool enableCreateNew = false);
     bool RemoveVariable(char* paramName);
 
     int GetNumVariables();

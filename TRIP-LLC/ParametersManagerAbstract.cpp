@@ -21,7 +21,7 @@ bool ParametersManagerAbstract::SetVariableIfNotExists(char* paramName, double p
   // Try to get the parameter, initialize it if does not already exist
   // Return false if parameter already existed, true otherwise
   if(GetVariable(paramName) == nullptr){
-    SetVariable(paramName, paramValue);
+    SetVariable(paramName, paramValue, true);
     return true;
   }
   return false;
@@ -34,15 +34,14 @@ void ParametersManagerAbstract::InitializeVariables(){
     return;
   }
 
-  for(int i = 0; i < _numVariables; i++){
-    SetVariableIfNotExists(("PAR" + String(i)).c_str(), i * 100.0);
-  }
-
-  /*
-  SetVariableIfNotExists("A", 10.01);
-  SetVariableIfNotExists("B", 20.02);
-  SetVariableIfNotExists("C", 30.03);
-  */
+  SetVariableIfNotExists("M1_ENC_IMP", 1630);
+  SetVariableIfNotExists("M2_ENC_IMP", 1630);
+  
+  SetVariableIfNotExists("M1_ENC_TIN", 300);
+  SetVariableIfNotExists("M2_ENC_TIN", 300);
+  
+  SetVariableIfNotExists("M1_CON_KP",  0.02);
+  SetVariableIfNotExists("M2_CON_KP",  0.02);
 
   return;
 }
@@ -81,10 +80,10 @@ ParameterVariable* ParametersManagerAbstract::GetVariable(char* paramName){
   
 }
 
-bool ParametersManagerAbstract::SetVariable(char* paramName, double paramValue){
+bool ParametersManagerAbstract::SetVariable(char* paramName, double paramValue, bool enableCreateNew = false){
   // Search in the parameters list if a variable with the same unique name identifier does exists
   // If it is present, then update its value and initialization
-  // If not present, create a new variable in the first uninitialized position, if available
+  // If not present and creation of new variable is enabled, select the first uninitialized position, if available
 
   if(RestoreParameters() == false){
     return false;
@@ -111,7 +110,7 @@ bool ParametersManagerAbstract::SetVariable(char* paramName, double paramValue){
   if(matchIdxFound != -1){
     setIndex = matchIdxFound;
   }
-  else if(matchIdxNotInitialized != -1){
+  else if(enableCreateNew == true and matchIdxNotInitialized != -1){
     setIndex = matchIdxNotInitialized;
   }
   else
