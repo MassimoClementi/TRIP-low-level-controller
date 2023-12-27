@@ -42,8 +42,8 @@ void DataExchangeSerial::Update(){
 
     // Parse command by splitting by separator 
     char * strtokIndx;
-    strtokIndx = strtok(_message,",");
-    _lastCommand.instruction = String(strtokIndx);    // get instruction as string
+    strtokIndx = strupr(strtok(_message,","));
+    _lastCommand.instruction = String(strtokIndx);    // get instruction as string, upper-case
     strtokIndx = strtok(NULL, ",");
     _lastCommand.arg1 = String(strtokIndx);
     strtokIndx = strtok(NULL, ",");

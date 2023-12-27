@@ -125,25 +125,33 @@ bool ParametersManagerAbstract::SetVariable(char* paramName, double paramValue, 
   return StoreParameter(setIndex);
 }
 
-bool ParametersManagerAbstract::RemoveVariable(char* paramName){
-  // Loop all variable until name matches
-  // Then set variable as unititialized
-  return false;
+bool ParametersManagerAbstract::RemoveVariable(int paramIndex){
+  // Set the parameter at the given index as empty
+  _parameters[paramIndex].paramName[0] = '\0';
+  _parameters[paramIndex].paramValue = 0.0;
+  _parameters[paramIndex].isInitialized = false;
+  return true;
 }
 
 bool ParametersManagerAbstract::ResetAll(){
   // Reset all parameter list to empty and store changes
   for(int i = 0; i < _numVariables; i++){
-    _parameters[i].paramName[0] = '\0';
-    _parameters[i].paramValue = 0.0;
-    _parameters[i].isInitialized = false;
+    RemoveVariable(i);
   }
   return StoreParameters();
 }
 
 String ParametersManagerAbstract::GetParameterDescription(int paramIdex){
   // Get formatted parameter name, value and initialization status
-  return String(_parameters[paramIdex].paramName) + " | " + 
+  bool isInitialized = _parameters[paramIdex].isInitialized > 0;
+  if(isInitialized == true){
+    // If initialized, return all details
+    return String(_parameters[paramIdex].paramName) + " | " + 
          String(_parameters[paramIdex].paramValue) + " | " +  
-         String(_parameters[paramIdex].isInitialized);
+         String(isInitialized);
+  } else {
+    // Display non-initialized parameters as placeholders
+    return "(non-initialized)";
+  }
+  
 }

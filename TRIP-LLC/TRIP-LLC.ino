@@ -127,7 +127,7 @@ void OnCommandReceived(const Command command){
   }
   if(command.instruction == "PLIST"){
     // Provide the list of all parameters
-    dataExchange->SendMessage("== EEPROM PARAMETERS CONTENT ==");
+    dataExchange->SendMessage("== BOARD PARAMETERS ==");
     dataExchange->SendMessage("Name | Value | Instantiation status");
     for(int i = 0; i < parametersManager->GetNumVariables(); i++){
       dataExchange->SendMessage(parametersManager->GetParameterDescription(i));
@@ -138,8 +138,9 @@ void OnCommandReceived(const Command command){
   if(command.instruction == "PERASE"){
     // Reset all parameters stored to EEPROM
     // This is a non-ordinary operation to perform
+    dataExchange->SendMessage("Erasing board parameters stored to EEPROM...");
     parametersManager->ResetAll();
-    dataExchange->SendMessage("EEPROM resetted");
+    dataExchange->SendMessage("Done.");
     return;
   }
 

@@ -34,7 +34,7 @@ public:
 
     ParameterVariable* GetVariable(char* paramName);
     bool SetVariable(char* paramName, double paramValue, bool enableCreateNew = false);
-    bool RemoveVariable(char* paramName);
+    bool RemoveVariable(int paramIndex);
 
     int GetNumVariables();
     String GetParameterDescription(int paramIndex);
