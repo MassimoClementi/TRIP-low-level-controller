@@ -15,13 +15,13 @@ ParametersManagerEEPROM::~ParametersManagerEEPROM(){
 
 bool ParametersManagerEEPROM::StoreParameters(){
   // Sequentially store all parameters to the internal EEPROM
-  for(int i = 0; i < _numVariables; i++){
+  for(uint8_t i = 0; i < _numVariables; i++){
     StoreParameter(i);
   }
   return true;
 }
 
-bool ParametersManagerEEPROM::StoreParameter(int paramIndex){
+bool ParametersManagerEEPROM::StoreParameter(uint8_t paramIndex){
   // Store a single parameter to the internal EEPROM
   // Serial.println("WARNING: AN ACCESS TO EEPROM IS NECESSARY!");
   EEPROM.put(
@@ -33,7 +33,7 @@ bool ParametersManagerEEPROM::StoreParameter(int paramIndex){
 
 bool ParametersManagerEEPROM::RestoreParameters(){
   // Load all parameters from internal EEPROM
-  for(int i = 0; i < _numVariables; i++){
+  for(uint8_t i = 0; i < _numVariables; i++){
     EEPROM.get(
       i * sizeof(ParameterVariable),
       _parameters[i]

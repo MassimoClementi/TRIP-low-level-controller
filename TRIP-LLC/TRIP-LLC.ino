@@ -33,7 +33,7 @@ DataExchangeAbstract* dataExchange = nullptr;
 DCMotorAbstract* dcMotors[NUM_MOTORS];
 RotaryEncoderAbstract* rotaryEncoders[NUM_MOTORS];
 ControllerAbstract* controllers[NUM_MOTORS];
-ParametersManagerAbstract* parametersManager;
+ParametersManagerAbstract* parametersManager = nullptr;
 
 void setup() {
   dataExchange = new DataExchangeSerial(9600, 50);
@@ -76,17 +76,17 @@ void loop() {
  * Events callback functions and utilities
  */
 
-void OnEncoder1Measurement(const EncoderMeasurement encoderMeasurement){
+void OnEncoder1Measurement(const EncoderMeasurement* encoderMeasurement){
     OnEncoderMeasurement(encoderMeasurement, 0);
 }
 
-void OnEncoder2Measurement(const EncoderMeasurement encoderMeasurement){
+void OnEncoder2Measurement(const EncoderMeasurement* encoderMeasurement){
     OnEncoderMeasurement(encoderMeasurement, 1);
 }
 
-void OnEncoderMeasurement(const EncoderMeasurement encoderMeasurement, int encoderNumber){
+void OnEncoderMeasurement(const EncoderMeasurement* encoderMeasurement, uint8_t encoderNumber){
     // dataExchange->SendEncoderMeasurement(encoderMeasurement, encoderNumber);
-    controllers[encoderNumber]->SetMeasuredOutput(encoderMeasurement.rpm);
+    controllers[encoderNumber]->SetMeasuredOutput(encoderMeasurement->rpm);
 }
 
 void OnController1UpdateControlInput(const double controlInput){
@@ -97,27 +97,27 @@ void OnController2UpdateControlInput(const double controlInput){
   OnControllerUpdateControlInput(controlInput, 1);
 }
 
-void OnControllerUpdateControlInput(const double controlInput, int controllerNumber){
-  // dataExchange->SendMessage("CON" + String(controllerNumber) + ", INPUT SET " + String(controlInput));
+void OnControllerUpdateControlInput(const double controlInput, uint8_t controllerNumber){
+  // dataExchange->SendMessage(("CON" + String(controllerNumber) + ", INPUT SET " + String(controlInput)).c_str());
   dcMotors[controllerNumber]->SetSpeedPercent(controlInput);
 }
 
-void OnCommandReceived(const Command command){
+void OnCommandReceived(const Command* command){
   // The following commands are motor-agnostic
   // Therefore no value checks need to be performed
-  if(command.instruction == "ENC"){
+  if(strcmp(command->instruction, "ENC") == 0){
     // Share last measurement of all encoders
-    for(int enc_idx = 0; enc_idx < NUM_MOTORS; enc_idx++){
+    for(uint8_t enc_idx = 0; enc_idx < NUM_MOTORS; enc_idx++){
       dataExchange->SendEncoderMeasurement(
         rotaryEncoders[enc_idx]->GetLastMeasurement(),
         enc_idx);
     }
     return;
   }
-  if(command.instruction == "PSET"){
+  if(parametersManager != nullptr and strcmp(command->instruction, "PSET") == 0){
     // Set the provided parameter to the given value
-    dataExchange->SendMessage("Setting parameter " + command.arg1 + " to value " + command.arg2);
-    bool res = parametersManager->SetVariable(command.arg1.c_str(), command.arg2);
+    dataExchange->SendMessage(("Setting parameter " + String(command->arg1) + " to value " + String(command->arg2)).c_str());
+    bool res = parametersManager->SetVariable(command->arg1, command->arg2);
     if(res == true){
       dataExchange->SendMessage("Parameter value updated successfully");
     } else {
@@ -125,17 +125,17 @@ void OnCommandReceived(const Command command){
     }
     return;
   }
-  if(command.instruction == "PLIST"){
+  if(parametersManager != nullptr and strcmp(command->instruction, "PLIST") == 0){
     // Provide the list of all parameters
     dataExchange->SendMessage("== BOARD PARAMETERS ==");
     dataExchange->SendMessage("Name | Value | Instantiation status");
-    for(int i = 0; i < parametersManager->GetNumVariables(); i++){
-      dataExchange->SendMessage(parametersManager->GetParameterDescription(i));
+    for(uint8_t i = 0; i < parametersManager->GetNumVariables(); i++){
+      dataExchange->SendMessage(parametersManager->GetParameterDescription(i).c_str());
     }
     dataExchange->SendMessage("== End of table ==");
     return;
   }
-  if(command.instruction == "PERASE"){
+  if(parametersManager != nullptr and strcmp(command->instruction, "PERASE") == 0){
     // Reset all parameters stored to EEPROM
     // This is a non-ordinary operation to perform
     dataExchange->SendMessage("Erasing board parameters stored to EEPROM...");
@@ -147,19 +147,19 @@ void OnCommandReceived(const Command command){
   // The following commands are motor-specific
   // It is then necessary to assert beforehand that the index
   // of the motor of interest is valid
-  int selectedItem = atoi(command.arg1.c_str());
+  uint8_t selectedItem = atoi(command->arg1);
   if(selectedItem < 0 or selectedItem >= NUM_MOTORS){
     return;
   }
-  if(command.instruction == "MSET"){
+  if(strcmp(command->instruction, "MSET") == 0){
     // Set directly motor percent speed
     controllers[selectedItem]->SetEnabled(false);
-    dcMotors[selectedItem]->SetSpeedPercent(command.arg2);
+    dcMotors[selectedItem]->SetSpeedPercent(command->arg2);
     return;
   }
-  if(command.instruction == "CSET"){
+  if(strcmp(command->instruction, "CSET") == 0){
     // Define new absolute speed setpoint for motor controller
-    controllers[selectedItem]->SetTarget(command.arg2);
+    controllers[selectedItem]->SetTarget(command->arg2);
     controllers[selectedItem]->SetEnabled(true);
     return;
   }

@@ -23,12 +23,12 @@ class DCMotorAFShield : public DCMotorAbstract
 {
 private:   
   const double _maxOutputValue = 255;
-  int _DCMotorID;
+  uint8_t _DCMotorID;
 
   AF_DCMotor* _motor = nullptr;
 
 public:
-    DCMotorAFShield(int DCMotorID);
+    DCMotorAFShield(uint8_t DCMotorID);
     ~DCMotorAFShield();
 
     void UpdateOutputValue();

@@ -12,8 +12,8 @@ struct EncoderMeasurement {
 };
 
 struct Command {
-   String instruction;
-   String arg1;
+   char instruction[8];
+   char arg1[8];
    double arg2;
 };
 

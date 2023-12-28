@@ -30,8 +30,8 @@ public:
     DataExchangeSerial(int baudRate, int updateInterval_ms);
     ~DataExchangeSerial();
 
-    void SendMessage(const String message);
-    void SendEncoderMeasurement(const EncoderMeasurement encoderMeasurement, const int encoderNumber);
+    void SendMessage(const char message[96]);
+    void SendEncoderMeasurement(const EncoderMeasurement* encoderMeasurement, const uint8_t encoderNumber);
 
 };
 

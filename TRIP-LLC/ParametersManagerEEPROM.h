@@ -22,7 +22,7 @@ class ParametersManagerEEPROM : public ParametersManagerAbstract
 {
 protected:
   bool StoreParameters();
-  bool StoreParameter(int paramIndex);
+  bool StoreParameter(uint8_t paramIndex);
   bool RestoreParameters();
   
 public:

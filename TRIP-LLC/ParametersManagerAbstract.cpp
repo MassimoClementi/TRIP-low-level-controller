@@ -13,7 +13,7 @@ ParametersManagerAbstract::~ParametersManagerAbstract(){
 
 }
 
-int ParametersManagerAbstract::GetNumVariables(){
+uint8_t ParametersManagerAbstract::GetNumVariables(){
   return _numVariables;
 }
 
@@ -58,7 +58,7 @@ ParameterVariable* ParametersManagerAbstract::GetVariable(char* paramName){
 
   // Search for first occcurence in parameter list
   // that matches the provided name
-  for(int i = 0; i < _numVariables; i++){
+  for(uint8_t i = 0; i < _numVariables; i++){
     if(_parameters[i].isInitialized == 0){
       // Skip uninitialized variables
       continue;
@@ -89,12 +89,12 @@ bool ParametersManagerAbstract::SetVariable(char* paramName, double paramValue, 
     return false;
   }
 
-  int matchIdxNotInitialized = -1;
-  int matchIdxFound = -1;
+  uint8_t matchIdxNotInitialized = -1;
+  uint8_t matchIdxFound = -1;
 
   // Search for first occcurence in parameter list
   // that matches the provided name
-  for(int i = 0; i < _numVariables; i++){
+  for(uint8_t i = 0; i < _numVariables; i++){
     if(matchIdxNotInitialized == -1 and _parameters[i].isInitialized == 0){
       // Save first occurence of uninitialized variable
       matchIdxNotInitialized = i;
@@ -106,7 +106,7 @@ bool ParametersManagerAbstract::SetVariable(char* paramName, double paramValue, 
   }
 
   // Evaluate search results
-  int setIndex = -1;
+  uint8_t setIndex = -1;
   if(matchIdxFound != -1){
     setIndex = matchIdxFound;
   }
@@ -125,7 +125,7 @@ bool ParametersManagerAbstract::SetVariable(char* paramName, double paramValue, 
   return StoreParameter(setIndex);
 }
 
-bool ParametersManagerAbstract::RemoveVariable(int paramIndex){
+bool ParametersManagerAbstract::RemoveVariable(uint8_t paramIndex){
   // Set the parameter at the given index as empty
   _parameters[paramIndex].paramName[0] = '\0';
   _parameters[paramIndex].paramValue = 0.0;
@@ -135,13 +135,13 @@ bool ParametersManagerAbstract::RemoveVariable(int paramIndex){
 
 bool ParametersManagerAbstract::ResetAll(){
   // Reset all parameter list to empty and store changes
-  for(int i = 0; i < _numVariables; i++){
+  for(uint8_t i = 0; i < _numVariables; i++){
     RemoveVariable(i);
   }
   return StoreParameters();
 }
 
-String ParametersManagerAbstract::GetParameterDescription(int paramIdex){
+String ParametersManagerAbstract::GetParameterDescription(uint8_t paramIdex){
   // Get formatted parameter name, value and initialization status
   bool isInitialized = _parameters[paramIdex].isInitialized > 0;
   if(isInitialized == true){

@@ -15,8 +15,8 @@ RotaryEncoderAbstract::~RotaryEncoderAbstract(){
   
 }
 
-EncoderMeasurement RotaryEncoderAbstract::GetLastMeasurement(){
-  return _lastMeasurement;
+EncoderMeasurement* RotaryEncoderAbstract::GetLastMeasurement(){
+  return &_lastMeasurement;
 }
 
 void RotaryEncoderAbstract::Update(){
@@ -41,6 +41,6 @@ void RotaryEncoderAbstract::Update(){
   _currNumImpulses = 0;
 
   // Broadcast measurement
-  EMeasurement(_lastMeasurement);
+  EMeasurement(&_lastMeasurement);
   
 }

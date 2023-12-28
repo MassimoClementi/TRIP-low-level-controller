@@ -29,10 +29,10 @@ protected:
 public:
     DataExchangeAbstract(int updateInterval_ms);
     ~DataExchangeAbstract();
-    virtual void SendMessage(const String message) = 0;
-    virtual void SendEncoderMeasurement(const EncoderMeasurement encoderMeasurement, const int encoderNumber) = 0;
+    virtual void SendMessage(const char message[96]) = 0;
+    virtual void SendEncoderMeasurement(const EncoderMeasurement* encoderMeasurement, const uint8_t encoderNumber) = 0;
     
-    Signal<const Command> ECommandReceived;
+    Signal<const Command*> ECommandReceived;
 };
 
 #endif

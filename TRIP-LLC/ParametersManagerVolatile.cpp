@@ -18,7 +18,7 @@ bool ParametersManagerVolatile::StoreParameters(){
   return true;
 }
 
-bool ParametersManagerVolatile::StoreParameter(int paramIndex){
+bool ParametersManagerVolatile::StoreParameter(uint8_t paramIndex){
   // No operation needs to be performed
   return true;
 }

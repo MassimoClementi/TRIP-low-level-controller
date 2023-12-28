@@ -5,7 +5,7 @@
 
 #include "RotaryEncoder.h"
 
-RotaryEncoder::RotaryEncoder(int pinEncoderA, int pinEncoderB, unsigned long numImpulsesPerFullRotation, int updateInterval_ms) : RotaryEncoderAbstract(numImpulsesPerFullRotation, updateInterval_ms){
+RotaryEncoder::RotaryEncoder(uint8_t pinEncoderA, uint8_t pinEncoderB, unsigned long numImpulsesPerFullRotation, int updateInterval_ms) : RotaryEncoderAbstract(numImpulsesPerFullRotation, updateInterval_ms){
   _pinEncoderA = pinEncoderA;
   _pinEncoderB = pinEncoderB;
 

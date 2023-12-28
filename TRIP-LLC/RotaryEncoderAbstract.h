@@ -28,9 +28,9 @@ public:
     RotaryEncoderAbstract(unsigned long numImpulsesPerFullRotation, int updateInterval_ms);
     ~RotaryEncoderAbstract();
 
-    EncoderMeasurement GetLastMeasurement();
+    EncoderMeasurement* GetLastMeasurement();
 
-    Signal<const EncoderMeasurement> EMeasurement;
+    Signal<const EncoderMeasurement*> EMeasurement;
 };
 
 #endif
