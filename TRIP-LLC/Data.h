@@ -13,7 +13,7 @@ struct EncoderMeasurement {
 
 struct Command {
    char instruction[8];
-   char arg1[8];
+   char arg1[15];
    double arg2;
 };
 

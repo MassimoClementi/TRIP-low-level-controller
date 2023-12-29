@@ -51,6 +51,8 @@ It is worth noting that in the scope of this project, the _reference input_ is t
 
 ## Board parameters
 
+> **_NOTE:_**  The parameters manager functionality may not be avaialble for boards that do not have a sufficient amount of memory. Please refer to `BoardTypes.h`for more information.
+
 This project also embeds a board parameter manager, which enables to read, edit and store name-and-value-pair parameters without the need to recompile and load the entire project on the Arduino.
 
 To store the parameters and preserve their values even when the board is powered off, the internal EEPROM memory is used. Since the amount of writes/erase of EEPROM memories are limited (typically to 100.000 cicles for each memory block), implementation approaches have been followed to ensure that those operations are performed as few times as possible.
@@ -86,18 +88,18 @@ ENC
 ```
 The Arduino will then publish on the serial communication, for each encoder, the istantaneous RPM value and the related instant of measurement, expressed in milliseconds since board start-up. This enables performing data elaborations which require precise time deltas.
 
-Any board parameter of interest can be set to an updated value by using the following command.
+If the parameters manager is supported, any board parameter of interest can be set to an updated value by using the following command.
 ```
 PSET,<paramName>,<paramValue>
 ```
 where `paramName` is the name of the parameters to edit and `paramValue` is the new value to set.
 
-The list of all instantiated and uninstantiated parameters can be retrieved with the following command.
+Then, the list of all instantiated and uninstantiated parameters can be retrieved with the following command.
 ```
 PLIST
 ```
 
-All parameters stored to EEPROM can be erased with the following command.
+Finally, all parameters stored to EEPROM can be erased with the following command.
 ```
 PERASE
 ```

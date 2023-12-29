@@ -54,7 +54,7 @@ ParameterVariable* ParametersManagerAbstract::GetVariable(char* paramName){
     return nullptr;
   }
 
-  int matchIdx = -1;
+  int matchIdx = _numVariables;   // initialize index as non-valid value
 
   // Search for first occcurence in parameter list
   // that matches the provided name
@@ -70,7 +70,7 @@ ParameterVariable* ParametersManagerAbstract::GetVariable(char* paramName){
   }
 
   // Return matched parameter, if found
-  if(matchIdx != -1){
+  if(matchIdx != _numVariables){
     return &(_parameters[matchIdx]);
   }
   else
@@ -89,13 +89,14 @@ bool ParametersManagerAbstract::SetVariable(char* paramName, double paramValue, 
     return false;
   }
 
-  uint8_t matchIdxNotInitialized = -1;
-  uint8_t matchIdxFound = -1;
+  // Initialize indexes as non-valid values
+  uint8_t matchIdxNotInitialized = _numVariables;
+  uint8_t matchIdxFound = _numVariables;
 
   // Search for first occcurence in parameter list
   // that matches the provided name
   for(uint8_t i = 0; i < _numVariables; i++){
-    if(matchIdxNotInitialized == -1 and _parameters[i].isInitialized == 0){
+    if(matchIdxNotInitialized == _numVariables and _parameters[i].isInitialized == 0){
       // Save first occurence of uninitialized variable
       matchIdxNotInitialized = i;
     }
@@ -106,11 +107,11 @@ bool ParametersManagerAbstract::SetVariable(char* paramName, double paramValue, 
   }
 
   // Evaluate search results
-  uint8_t setIndex = -1;
-  if(matchIdxFound != -1){
+  uint8_t setIndex = _numVariables;
+  if(matchIdxFound != _numVariables){
     setIndex = matchIdxFound;
   }
-  else if(enableCreateNew == true and matchIdxNotInitialized != -1){
+  else if(enableCreateNew == true and matchIdxNotInitialized != _numVariables){
     setIndex = matchIdxNotInitialized;
   }
   else
@@ -148,7 +149,7 @@ String ParametersManagerAbstract::GetParameterDescription(uint8_t paramIdex){
     // If initialized, return all details
     return String(_parameters[paramIdex].paramName) + " | " + 
          String(_parameters[paramIdex].paramValue) + " | " +  
-         String(isInitialized);
+         String(_parameters[paramIdex].isInitialized);
   } else {
     // Display non-initialized parameters as placeholders
     return "(non-initialized)";

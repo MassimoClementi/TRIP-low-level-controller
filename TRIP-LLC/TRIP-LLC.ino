@@ -6,13 +6,16 @@
 // Libraries imports
 #include <MicroQt.h>
 using namespace MicroQt;
+#import "BoardTypes.h"
 #import "Data.h"
 #import "DataExchangeSerial.h"
 #import "DCMotor_TB6612FNG.h"
 #import "RotaryEncoder.h"
 #import "ControllerStep.h"
 #import "ControllerPID.h"
+#if defined(TRIP_LLC_PARAMETERS_MANAGER_SUPPORTED)
 #import "ParametersManagerEEPROM.h"
+#endif
 
 // Hardware configuration
 #define NUM_MOTORS 2
@@ -28,25 +31,41 @@ using namespace MicroQt;
 #define PIN_MOTOR2_PWM 6
 #define PIN_MOTORS_STBY 12
 
+// Board parameters, with defaults
+double M1_ENC_IMP = 1630;
+double M2_ENC_IMP = 1630;
+double M1_ENC_TIN = 300;
+double M2_ENC_TIN = 300;
+double M1_CON_KP = 0.02;
+double M2_CON_KP = 0.02;
+
 // Global variables
 DataExchangeAbstract* dataExchange = nullptr;
 DCMotorAbstract* dcMotors[NUM_MOTORS];
 RotaryEncoderAbstract* rotaryEncoders[NUM_MOTORS];
 ControllerAbstract* controllers[NUM_MOTORS];
+#if defined(TRIP_LLC_PARAMETERS_MANAGER_SUPPORTED)
 ParametersManagerAbstract* parametersManager = nullptr;
+#endif
 
 void setup() {
   dataExchange = new DataExchangeSerial(9600, 50);
   dataExchange->SendMessage("Hello world from TRIP-LLC!");
+  dataExchange->SendMessage(("Board type: " + String(BOARD)).c_str());
   dataExchange->ECommandReceived.connect(&OnCommandReceived);
 
+  #if defined(TRIP_LLC_PARAMETERS_MANAGER_SUPPORTED)
+  dataExchange->SendMessage("Parameters manager available");
   parametersManager = new ParametersManagerEEPROM();
-  double M1_ENC_IMP = parametersManager->GetVariable("M1_ENC_IMP")->paramValue;
-  double M2_ENC_IMP = parametersManager->GetVariable("M2_ENC_IMP")->paramValue;
-  double M1_ENC_TIN = parametersManager->GetVariable("M1_ENC_TIN")->paramValue;
-  double M2_ENC_TIN = parametersManager->GetVariable("M2_ENC_TIN")->paramValue;
-  double M1_CON_KP = parametersManager->GetVariable("M1_CON_KP")->paramValue;
-  double M2_CON_KP = parametersManager->GetVariable("M2_CON_KP")->paramValue;
+  M1_ENC_IMP = parametersManager->GetVariable("M1_ENC_IMP")->paramValue;
+  M2_ENC_IMP = parametersManager->GetVariable("M2_ENC_IMP")->paramValue;
+  M1_ENC_TIN = parametersManager->GetVariable("M1_ENC_TIN")->paramValue;
+  M2_ENC_TIN = parametersManager->GetVariable("M2_ENC_TIN")->paramValue;
+  M1_CON_KP = parametersManager->GetVariable("M1_CON_KP")->paramValue;
+  M2_CON_KP = parametersManager->GetVariable("M2_CON_KP")->paramValue;
+  #else
+  dataExchange->SendMessage("Parameters manager not supported by current board");
+  #endif
 
   dcMotors[0] = new DCMotor_TB6612FNG(PIN_MOTOR1_IN1, PIN_MOTOR1_IN2, PIN_MOTOR1_PWM, PIN_MOTORS_STBY);
   dcMotors[1] = new DCMotor_TB6612FNG(PIN_MOTOR2_IN1, PIN_MOTOR2_IN2, PIN_MOTOR2_PWM, PIN_MOTORS_STBY);
@@ -70,7 +89,6 @@ void loop() {
   // The loop function manages all events and timers
   eventLoop.exec();
 }
-
 
 /*
  * Events callback functions and utilities
@@ -114,7 +132,9 @@ void OnCommandReceived(const Command* command){
     }
     return;
   }
-  if(parametersManager != nullptr and strcmp(command->instruction, "PSET") == 0){
+
+  #if defined(TRIP_LLC_PARAMETERS_MANAGER_SUPPORTED)
+  if(strcmp(command->instruction, "PSET") == 0){
     // Set the provided parameter to the given value
     dataExchange->SendMessage(("Setting parameter " + String(command->arg1) + " to value " + String(command->arg2)).c_str());
     bool res = parametersManager->SetVariable(command->arg1, command->arg2);
@@ -125,7 +145,7 @@ void OnCommandReceived(const Command* command){
     }
     return;
   }
-  if(parametersManager != nullptr and strcmp(command->instruction, "PLIST") == 0){
+  if(strcmp(command->instruction, "PLIST") == 0){
     // Provide the list of all parameters
     dataExchange->SendMessage("== BOARD PARAMETERS ==");
     dataExchange->SendMessage("Name | Value | Instantiation status");
@@ -135,7 +155,7 @@ void OnCommandReceived(const Command* command){
     dataExchange->SendMessage("== End of table ==");
     return;
   }
-  if(parametersManager != nullptr and strcmp(command->instruction, "PERASE") == 0){
+  if(strcmp(command->instruction, "PERASE") == 0){
     // Reset all parameters stored to EEPROM
     // This is a non-ordinary operation to perform
     dataExchange->SendMessage("Erasing board parameters stored to EEPROM...");
@@ -143,6 +163,7 @@ void OnCommandReceived(const Command* command){
     dataExchange->SendMessage("Done.");
     return;
   }
+  #endif
 
   // The following commands are motor-specific
   // It is then necessary to assert beforehand that the index
