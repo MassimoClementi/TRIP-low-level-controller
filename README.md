@@ -51,7 +51,7 @@ It is worth noting that in the scope of this project, the _reference input_ is t
 
 ## Board parameters
 
-> **_NOTE:_**  The parameters manager functionality may not be avaialble for boards that do not have a sufficient amount of memory. Please refer to `BoardTypes.h`for more information.
+> **_NOTE:_**  The parameters manager functionality may not be avaialble for boards that do not have a sufficient amount of memory. Please refer to `BoardTypes.h` for more information.
 
 This project also embeds a board parameter manager, which enables to read, edit and store name-and-value-pair parameters without the need to recompile and load the entire project on the Arduino.
 
