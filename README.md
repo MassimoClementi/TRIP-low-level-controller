@@ -20,6 +20,7 @@ Hereafter the main abstract classes are reported:
 | RotaryEncoderAbstract | Object which embeds the logic to retrieve impulses count, compute istantaneous rotation speed measurements and broadcast measurement results |
 | ControllerAbstract | Object which defines methods to create a closed-loop controller for the motor actuation |
 | DataExchangeAbstract | Object which defines methods to create an interface between the board and external systems |
+| ParametersManagerAbstract | Object which defines methods to create a parameters manager, which allows to get, edit and save a list of numerical values paired to an unique string identifier |
 
 Abstract classes are then used to generate specialized derived classes, which define explicitly the interfaces between the software and the physical devices.
 
@@ -48,27 +49,60 @@ The following image shows the basic design architecture that has been followed d
 
 It is worth noting that in the scope of this project, the _reference input_ is the absolute speed target (RPMs), the _control input_ is the relative motor speed (0 to 100), and the _transducer_ is the rotary encoder. 
 
+## Board parameters
+
+> **_NOTE:_**  The parameters manager functionality may not be avaialble for boards that do not have a sufficient amount of memory. Please refer to `BoardTypes.h` for more information.
+
+This project also embeds a board parameter manager, which enables to read, edit and store name-and-value-pair parameters without the need to recompile and load the entire project on the Arduino.
+
+To store the parameters and preserve their values even when the board is powered off, the internal EEPROM memory is used. Since the amount of writes/erase of EEPROM memories are limited (typically to 100.000 cicles for each memory block), implementation approaches have been followed to ensure that those operations are performed as few times as possible.
+
+The parameters related to motor 1 and their default values are reported in the table below. Parameters for motor 2 are analogous, their name can be retrieved by simply swapping `M1` with `M2`.
+
+| Parameter name | Description | Default value |
+| - | - | - |
+| M1_ENC_IMP | Number of rotary encoder impulses count related to a full rotation of the wheel | 1630 |
+| M1_ENC_TIN | Time interval (in ms) used for accumulating rotary encoder impulses count and then evaluating istantaneous wheel speed | 300 |
+| M1_CON_KP | Proportional constant used by the step controller | 0.02 |
+
+
 ## Serial signal exchange
 
 Both _relative_ and _absolute_ speed of each instantiated motor can be set by sending commands to the Arduino board using serial COM.
 
 The **relative** speed of each motor can be set by sending the following message:
 ```
-MSET, <motorNumber>, <value>
+MSET,<motorNumber>,<value>
 ```
-where motorNumber is the integer motor index, starting from zero, while the value $\in [-1.0,1.0]$ is the signed percentage speed, with dot decimal separator. The value magnitude represents the relative motor speed, with an absolute value of 1.0 as the maximum rotation speed and the value 0.0 as no rotation. The value sign embeds the direction of the revolution.
+where `motorNumber` is the integer motor index, starting from zero, while the value $\in [-1.0,1.0]$ is the signed percentage speed, with dot decimal separator. The value magnitude represents the relative motor speed, with an absolute value of 1.0 as the maximum rotation speed and the value 0.0 as no rotation. The value sign embeds the direction of the revolution.
 
 The **absolute** speed of each motor can be set by sending the following message:
 ```
-CSET, <motorNumber>, <value>
+CSET,<motorNumber>,<value>
 ```
-where motorNumber is the integer motor index, starting from zero, while the value $\in [-\infty,\infty]$ is the signed absolute speed, with dot decimal separator. The value magnitude represents the absolute motor speed, in RPM units. The value sign embeds the direction of the revolution.
+where `motorNumber` is the integer motor index, starting from zero, while the value $\in [-\infty,\infty]$ is the signed absolute speed, with dot decimal separator. The value magnitude represents the absolute motor speed, in RPM units. The value sign embeds the direction of the revolution.
 
-Finally, the last available RPM measurement of all managed rotary encoders can be retrieved with a single command, sending the following message:
+The last available RPM measurement of all managed rotary encoders can be retrieved with a single command, sending the following message:
 ```
 ENC
 ```
 The Arduino will then publish on the serial communication, for each encoder, the istantaneous RPM value and the related instant of measurement, expressed in milliseconds since board start-up. This enables performing data elaborations which require precise time deltas.
+
+If the parameters manager is supported, any board parameter of interest can be set to an updated value by using the following command.
+```
+PSET,<paramName>,<paramValue>
+```
+where `paramName` is the name of the parameters to edit and `paramValue` is the new value to set.
+
+Then, the list of all instantiated and uninstantiated parameters can be retrieved with the following command.
+```
+PLIST
+```
+
+Finally, all parameters stored to EEPROM can be erased with the following command.
+```
+PERASE
+```
 
 ## Libraries
 

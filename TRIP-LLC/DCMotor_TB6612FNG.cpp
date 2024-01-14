@@ -5,7 +5,7 @@
 
 #include "DCMotor_TB6612FNG.h"
 
-DCMotor_TB6612FNG::DCMotor_TB6612FNG(int pinIN1, int pinIN2, int pinPWM, int pinSTBY) : DCMotorAbstract() {
+DCMotor_TB6612FNG::DCMotor_TB6612FNG(uint8_t pinIN1, uint8_t pinIN2, uint8_t pinPWM, uint8_t pinSTBY) : DCMotorAbstract() {
   _pinIN1 = pinIN1;
   _pinIN2 = pinIN2;
   _pinPWM = pinPWM;
@@ -37,6 +37,6 @@ void DCMotor_TB6612FNG::UpdateOutputValue(){
   digitalWrite(_pinIN2, not isRotationForward);
 
   // Set motor speed
-  int currOutputValue = int(abs(_currSpeedPercent) * _maxOutputValue);
+  uint8_t currOutputValue = int(abs(_currSpeedPercent) * _maxOutputValue);
   analogWrite(_pinPWM, currOutputValue);
 }

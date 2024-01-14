@@ -5,7 +5,7 @@
 
 #include "DCMotorAFShield.h"
 
-DCMotorAFShield::DCMotorAFShield(int DCMotorID) : DCMotorAbstract() {
+DCMotorAFShield::DCMotorAFShield(uint8_t DCMotorID) : DCMotorAbstract() {
   _DCMotorID = DCMotorID;
 
   _motor = new AF_DCMotor(_DCMotorID);

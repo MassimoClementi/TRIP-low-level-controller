@@ -24,12 +24,12 @@ class RotaryEncoder : public RotaryEncoderAbstract
 {
 private:
 protected:
-    int _pinEncoderA, _pinEncoderB;
+    uint8_t _pinEncoderA, _pinEncoderB;
     Encoder* _encoder = nullptr;
     const Timer readingTimer;
     void GetImpulses();
 public:
-    RotaryEncoder(int pinEncoderA, int pinEncoderB, unsigned long numImpulsesPerFullRotation, int updateInterval_ms);
+    RotaryEncoder(uint8_t pinEncoderA, uint8_t pinEncoderB, unsigned long numImpulsesPerFullRotation, int updateInterval_ms);
     ~RotaryEncoder();
 };
 

@@ -12,8 +12,8 @@ struct EncoderMeasurement {
 };
 
 struct Command {
-   String instruction;
-   double arg1;
+   char instruction[8];
+   char arg1[15];
    double arg2;
 };
 
@@ -21,6 +21,13 @@ struct Command {
 enum RotationDirection{
   FORWARD = 1,
   BACKWARD = 2
+};
+
+// 15 + 8 + 1 bytes ~ 25 bytes
+struct ParameterVariable{
+  char paramName[15];
+  double paramValue = 0.0;
+  bool isInitialized = false;
 };
 
 #endif

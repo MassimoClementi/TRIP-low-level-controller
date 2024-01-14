@@ -21,10 +21,10 @@ class DCMotor_TB6612FNG : public DCMotorAbstract
 {
 private:   
   const double _maxOutputValue = 255;
-  int _pinIN1, _pinIN2, _pinPWM, _pinSTBY;
+  uint8_t _pinIN1, _pinIN2, _pinPWM, _pinSTBY;
 
 public:
-    DCMotor_TB6612FNG(int pinIN1, int pinIN2, int pinPWM, int pinSTBY);
+    DCMotor_TB6612FNG(uint8_t pinIN1, uint8_t pinIN2, uint8_t pinPWM, uint8_t pinSTBY);
     ~DCMotor_TB6612FNG();
 
     void SetStandbySignal(bool val);

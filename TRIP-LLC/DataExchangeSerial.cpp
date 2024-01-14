@@ -14,14 +14,14 @@ DataExchangeSerial::~DataExchangeSerial()
 {
 }
 
-void DataExchangeSerial::SendMessage(const String message){
+void DataExchangeSerial::SendMessage(const char message[96]){
   Serial.println(message);
 }
 
-void DataExchangeSerial::SendEncoderMeasurement(const EncoderMeasurement encoderMeasurement, const int encoderNumber){
-  SendMessage("ENC" + String(encoderNumber) + 
-              ", RPM: " + String(ConvertSpeed_FromIntToExt(encoderMeasurement.rpm)) + 
-              ", T: " + String(encoderMeasurement.instant_ms));
+void DataExchangeSerial::SendEncoderMeasurement(const EncoderMeasurement* encoderMeasurement, const uint8_t encoderNumber){
+  SendMessage(("ENC" + String(encoderNumber) + 
+              ", RPM: " + String(ConvertSpeed_FromIntToExt(encoderMeasurement->rpm)) + 
+              ", T: " + String(encoderMeasurement->instant_ms)).c_str());
 }
 
 double DataExchangeSerial::GetIntToExtSpeedConversionFactor(){
@@ -36,25 +36,29 @@ void DataExchangeSerial::Update(){
     SendMessage("Receiving message...");
     String currMessage = Serial.readStringUntil('\n');
     currMessage.trim();
-    SendMessage("Message received: " + currMessage);
+    SendMessage(("Message received: " + currMessage).c_str());
     _message = currMessage.c_str();
-    SendMessage("C message is: " + String(_message));
+    // SendMessage("C message is: " + String(_message));
 
     // Parse command by splitting by separator 
     char * strtokIndx;
-    strtokIndx = strtok(_message,",");
-    _lastCommand.instruction = String(strtokIndx);    // get instruction as string
+    strtokIndx = strupr(strtok(_message,","));      //  upper-case
+    strcpy(_lastCommand.instruction, strtokIndx);
     strtokIndx = strtok(NULL, ",");
-    _lastCommand.arg1 = double(atof(strtokIndx));     // convert arg1 to double
+    strcpy(_lastCommand.arg1, strtokIndx);
     strtokIndx = strtok(NULL, ",");
-    _lastCommand.arg2 = ConvertSpeed_FromExtToInt(double(atof(strtokIndx)));     // convert arg2 to double
+    _lastCommand.arg2 = double(atof(strtokIndx));     // convert arg2 to double
+    if(_lastCommand.instruction == "CSET"){
+      // Only if a controller set command is received, scale value by RPM speed factor
+      _lastCommand.arg2 = ConvertSpeed_FromExtToInt(_lastCommand.arg2);
+    }
 
     // Log formatted received command
-    SendMessage("Command received: " + String(_lastCommand.instruction) + 
-                                  " | " + String(_lastCommand.arg1) + " | " + String(_lastCommand.arg2));
+    SendMessage(("Command received: " + String(_lastCommand.instruction) + 
+                                  " | " + String(_lastCommand.arg1) + " | " + String(_lastCommand.arg2)).c_str());
 
     // Share command
-    ECommandReceived(_lastCommand);
+    ECommandReceived(&_lastCommand);
 
     SendMessage("Resetting receive flag...");
     _isReading = false;
