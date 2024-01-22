@@ -31,6 +31,15 @@ using namespace MicroQt;
 #define PIN_MOTOR2_PWM 6
 #define PIN_MOTORS_STBY 12
 
+// Software configuration
+#define GENERIC_VERBOSE_LEVEL 1
+#define DATA_EXCHANGE_VERBOSE_LEVEL GENERIC_VERBOSE_LEVEL
+#if GENERIC_VERBOSE_LEVEL > 0
+#define MICRO_QT_LOGGING_MS 30000
+#else
+#define MICRO_QT_LOGGING_MS 0
+#endif
+
 // Board parameters, with defaults
 double M1_ENC_IMP = 1630;
 double M2_ENC_IMP = 1630;
@@ -49,13 +58,17 @@ ParametersManagerAbstract* parametersManager = nullptr;
 #endif
 
 void setup() {
-  dataExchange = new DataExchangeSerial(9600, 50);
-  dataExchange->SendMessage("Hello world from TRIP-LLC!");
-  dataExchange->SendMessage(("Board type: " + String(BOARD)).c_str());
+  dataExchange = new DataExchangeSerial(9600, DATA_EXCHANGE_VERBOSE_LEVEL, 50);
+  #if GENERIC_VERBOSE_LEVEL > 0
+    dataExchange->SendMessage("Hello world from TRIP-LLC!");
+    dataExchange->SendMessage(("Board type: " + String(BOARD)).c_str());
+  #endif
   dataExchange->ECommandReceived.connect(&OnCommandReceived);
 
   #if defined(TRIP_LLC_PARAMETERS_MANAGER_SUPPORTED)
+  #if GENERIC_VERBOSE_LEVEL > 0
   dataExchange->SendMessage("Parameters manager available");
+  #endif
   parametersManager = new ParametersManagerEEPROM();
   M1_ENC_IMP = parametersManager->GetVariable("M1_ENC_IMP")->paramValue;
   M2_ENC_IMP = parametersManager->GetVariable("M2_ENC_IMP")->paramValue;
@@ -64,7 +77,9 @@ void setup() {
   M1_CON_KP = parametersManager->GetVariable("M1_CON_KP")->paramValue;
   M2_CON_KP = parametersManager->GetVariable("M2_CON_KP")->paramValue;
   #else
+  #if GENERIC_VERBOSE_LEVEL > 0
   dataExchange->SendMessage("Parameters manager not supported by current board");
+  #endif
   #endif
 
   dcMotors[0] = new DCMotor_TB6612FNG(PIN_MOTOR1_IN1, PIN_MOTOR1_IN2, PIN_MOTOR1_PWM, PIN_MOTORS_STBY);
@@ -81,8 +96,10 @@ void setup() {
   controllers[1] = new ControllerStep(-1.0, 1.0, M2_CON_KP);
   controllers[1]->EUpdateControlInput.connect(&OnController2UpdateControlInput);
   
-  eventLoop.setLogIntervalMs(30000);
+  eventLoop.setLogIntervalMs(MICRO_QT_LOGGING_MS);
+  #if GENERIC_VERBOSE_LEVEL > 0
   dataExchange->SendMessage("TRIP-LLC configuration completed");
+  #endif
 }
 
 void loop() {

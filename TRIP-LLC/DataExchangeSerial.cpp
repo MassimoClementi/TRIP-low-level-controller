@@ -5,8 +5,9 @@
 
 #include "DataExchangeSerial.h"
 
-DataExchangeSerial::DataExchangeSerial(int baudRate, int updateInterval_ms) : DataExchangeAbstract(updateInterval_ms){
+DataExchangeSerial::DataExchangeSerial(int baudRate, int verboseLevel, int updateInterval_ms) : DataExchangeAbstract(updateInterval_ms){
   _baudRate = baudRate;
+  _verboseLevel = verboseLevel;
   Serial.begin(_baudRate);
 }
 
@@ -33,10 +34,10 @@ void DataExchangeSerial::Update(){
     _isReading = true;
 
     // Read message on serial until end-of-line character
-    SendMessage("Receiving message...");
+    if(_verboseLevel > 0) { SendMessage("Receiving message..."); }
     String currMessage = Serial.readStringUntil('\n');
     currMessage.trim();
-    SendMessage(("Message received: " + currMessage).c_str());
+    if(_verboseLevel > 0) { SendMessage(("Message received: " + currMessage).c_str()); }
     _message = currMessage.c_str();
     // SendMessage("C message is: " + String(_message));
 
@@ -54,13 +55,15 @@ void DataExchangeSerial::Update(){
     }
 
     // Log formatted received command
-    SendMessage(("Command received: " + String(_lastCommand.instruction) + 
+    if(_verboseLevel > 0) {
+      SendMessage(("Command received: " + String(_lastCommand.instruction) + 
                                   " | " + String(_lastCommand.arg1) + " | " + String(_lastCommand.arg2)).c_str());
+    }
 
     // Share command
     ECommandReceived(&_lastCommand);
 
-    SendMessage("Resetting receive flag...");
+    if(_verboseLevel > 0) { SendMessage("Resetting receive flag..."); }
     _isReading = false;
   }
 }
