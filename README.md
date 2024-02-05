@@ -84,7 +84,7 @@ where `motorNumber` is the integer motor index, starting from zero, while the va
 
 The last available RPM measurement of all managed rotary encoders can be retrieved with a single command, sending the following message:
 ```
-ENC
+E
 ```
 The Arduino will then publish on the serial communication, for each encoder, the istantaneous RPM value and the related instant of measurement, expressed in milliseconds since board start-up. This enables performing data elaborations which require precise time deltas.
 
