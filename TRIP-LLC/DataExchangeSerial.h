@@ -20,6 +20,7 @@ class DataExchangeSerial : public DataExchangeAbstract
 {
 private:
     int _baudRate;
+    int _verboseLevel;
     bool _isReading = false;
     const char* _message = nullptr;
 
@@ -27,7 +28,7 @@ private:
     void Update();
 
 public:
-    DataExchangeSerial(int baudRate, int updateInterval_ms);
+    DataExchangeSerial(int baudRate, int verboseLevel, int updateInterval_ms);
     ~DataExchangeSerial();
 
     void SendMessage(const char message[96]);
