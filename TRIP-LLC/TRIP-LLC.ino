@@ -32,7 +32,7 @@ using namespace MicroQt;
 #define PIN_MOTORS_STBY 12
 
 // Software configuration
-#define GENERIC_VERBOSE_LEVEL 1
+#define GENERIC_VERBOSE_LEVEL 0
 #define DATA_EXCHANGE_VERBOSE_LEVEL GENERIC_VERBOSE_LEVEL
 #if GENERIC_VERBOSE_LEVEL > 0
 #define MICRO_QT_LOGGING_MS 30000
@@ -140,13 +140,14 @@ void OnControllerUpdateControlInput(const double controlInput, uint8_t controlle
 void OnCommandReceived(const Command* command){
   // The following commands are motor-agnostic
   // Therefore no value checks need to be performed
-  if(strcmp(command->instruction, "ENC") == 0){
+  if(strcmp(command->instruction, "E") == 0){
     // Share last measurement of all encoders
     for(uint8_t enc_idx = 0; enc_idx < NUM_MOTORS; enc_idx++){
       dataExchange->SendEncoderMeasurement(
         rotaryEncoders[enc_idx]->GetLastMeasurement(),
         enc_idx);
     }
+    Serial.println("");
     return;
   }
 

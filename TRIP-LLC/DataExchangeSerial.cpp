@@ -16,13 +16,22 @@ DataExchangeSerial::~DataExchangeSerial()
 }
 
 void DataExchangeSerial::SendMessage(const char message[96]){
-  Serial.println(message);
+  Serial.print(message);
 }
 
 void DataExchangeSerial::SendEncoderMeasurement(const EncoderMeasurement* encoderMeasurement, const uint8_t encoderNumber){
-  SendMessage(("ENC" + String(encoderNumber) + 
-              ", RPM: " + String(ConvertSpeed_FromIntToExt(encoderMeasurement->rpm)) + 
-              ", T: " + String(encoderMeasurement->instant_ms)).c_str());
+  if(_verboseLevel > 0) {
+    SendMessage(("ENC" + String(encoderNumber) + 
+                ", RPM: " + String(ConvertSpeed_FromIntToExt(encoderMeasurement->rpm)) + 
+                ", T: " + String(encoderMeasurement->instant_ms) + 
+                "\n\r").c_str());
+  }
+  else {
+    SendMessage(("E" + String(encoderNumber) + 
+                "V" + String(ConvertSpeed_FromIntToExt(encoderMeasurement->rpm)) + 
+                "T" + String(encoderMeasurement->instant_ms) +
+                ",").c_str());
+  }
 }
 
 double DataExchangeSerial::GetIntToExtSpeedConversionFactor(){
